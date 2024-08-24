@@ -8,9 +8,9 @@ const Layout: React.FC<any> = ({ props }) => {
         <header>
             { <Navbar/> }
         </header>
-        <body>
+        <div>
             { <Drawer props={props}/> }
-        </body>
+        </div>
         </div>
     )
 }
