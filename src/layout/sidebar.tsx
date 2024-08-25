@@ -1,10 +1,11 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 
 export const Drawer: React.FC<any> = ({ props }) => {
   return (
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col items-center justify-center">
+      <div className="drawer-content flex flex-col p-10">
         {props}
         <label
           htmlFor="my-drawer-2"
@@ -20,15 +21,12 @@ export const Drawer: React.FC<any> = ({ props }) => {
           className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-            <p className="font-bold">Visitor</p>
+          <p className="font-bold my-3">Visitor</p>
           <li>
-            <a>Car</a>
+          <NavLink to="/finder">Finder</NavLink>
           </li>
           <li>
-            <a>Scooter</a>
-          </li>
-          <li>
-            <a>Citizen</a>
+          <NavLink to="/">Listing</NavLink>
           </li>
         </ul>
       </div>

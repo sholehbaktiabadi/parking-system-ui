@@ -24,8 +24,7 @@ export const Navbar = () => {
           .catch(() => setOnline(false));
       };
       serverHealth();
-      console.log("status ===========>", isOnlineRef.current);
-    }, 2000);
+    }, 10000);
     return () => clearInterval(interval);
   }, []);
 
