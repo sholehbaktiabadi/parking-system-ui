@@ -1,43 +1,66 @@
 import React, { useRef, useState } from "react"
 import { ParkingSystemService } from "../api/parking-system"
-import { Alert } from "../component/alert"
+import { FailureAlert, SuccessAlert } from "../component/alert"
 import { Visitor } from "../interface/visitor"
 import { formatDate } from "../helper/date"
+import { getStatusColor } from "../helper/transaction"
+import { getHttpStatus } from "../helper/api"
+import { HttpStatusType } from "../enum/http"
+import { PaymentType } from "../enum/payment"
 
 function Finder() {
     const IDref = useRef(0)
-    const [ID, setID] = useState(0)
+    const [ID, setID] = useState<number>()
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const [trxDisplay, setTrxDisplay] = useState("hidden")
+    const paymentType = useRef(PaymentType.CASH)
     const [visitor, setVisitor] = useState<Visitor>({
-        id: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        uniqueId: "AE2344XC",
-        type: "SCOOTER",
-        price: 2000,
-        reason: null,
-        quantity: 2,
-        grandTotal: 4000,
-        status: "COMPLETED",
-        timeUnit: "hour",
-        paymentType: "CASH",
-        departedAt: new Date()
+        id: 0, createdAt: new Date(), updatedAt: new Date(), uniqueId: "-", type: "-", price: 0, reason: null, quantity: 0, grandTotal: 0, status: "-", timeUnit: "-", paymentType: null, departedAt: new Date()
     })
 
-    const onEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        setID(IDref.current)
-        if (e.key == "Enter") {
+    const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const id = +e.target.value
+        IDref.current = id
+        setID(id)
+        if (IDref.current) {
             ParkingSystemService.getDetail(IDref.current)
-                .then(res => setVisitor(res.message))
+                .then(res => {
+                    setVisitor((prev) => ({ ...prev, ...res.message}))
+                    setTrxDisplay("block")
+                })
                 .catch(err => {
+                    setTrxDisplay("hidden")
                     setError(err.response.data.message);
-                    console.log(err.response.data.message);
                     setTimeout(() => {
                         setError(null);
                     }, 2000);
                 })
-            console.log(visitor)
+        } else {
+            setTrxDisplay("hidden")
         }
+    }
+
+    const updateButtonClick = () => {
+        console.log({ paymentType: visitor.paymentType, quantity: visitor.quantity, grandTotal: visitor.grandTotal })
+        ParkingSystemService.setAsDeparted(IDref.current, { paymentType: visitor.paymentType ?? paymentType.current, quantity: visitor.quantity, grandTotal: visitor.grandTotal })
+            .then(res => {
+                console.log(res.message)
+                setVisitor((prev) => ({ ...prev, ...res.message }))
+                setSuccess("Berhasil Update")
+                setTimeout(() => {
+                    setSuccess(null)
+                }, 2000);
+            })
+            .catch(err => {
+                const httpStatus = getHttpStatus(err.response.status)
+                if ([HttpStatusType.BR, HttpStatusType.FDB, HttpStatusType.ISE].includes(httpStatus)) {
+                    setError(httpStatus);
+                    setTimeout(() => {
+                        setError(null);
+                    }, 2000);
+                }
+            })
     }
     return (
         <>
@@ -51,19 +74,18 @@ function Finder() {
                             value={ID}
                             placeholder="Tap here"
                             className="input bg-transparent input-bordered input-accent w-full max-w-xs"
-                            onChange={(e) => IDref.current = +e.target.value}
-                            onKeyUp={(e) => onEnter(e)}
-                            autoFocus
+                            onChange={onInputChange}
                         />
                     </label>
                 </div>
 
-                {error && <Alert props={error} />}
+                {error && <FailureAlert props={error} />}
 
-                <div className="w-[60%] block bg-base-200 rounded-xl p-10">
-                    <p className="my-10">
-                        Transaction Detail:
-                    </p>
+                <div className={`w-[100%] lg:w-[70%]  block bg-base-200 rounded-xl ${trxDisplay} p-14`}>
+                    <div className="flex my-2">
+                        <div className="flex-initial w-[50%] bg-slate-800 h-14 rounded mr-1 flex items-center justify-center"><p className="text-lg font-bold">{visitor.uniqueId}</p></div>
+                        <div className={`flex-initial w-[50%] ${getStatusColor(visitor.status)} h-14 rounded ml-1 flex items-center justify-center`}><p className="text-lg font-bold">{visitor.status}</p></div>
+                    </div>
 
                     <div className="flex items-center">
                         <div className="flex-initial w-[20%]">ID</div>
@@ -111,15 +133,6 @@ function Finder() {
                     </div>
 
                     <div className="flex items-center">
-                        <div className="flex-initial w-[20%]">Payment</div>
-                        <div className="flex-initial w-full">
-                            <label className="input bg-base-200 input-bordered flex items-center gap-x-14 my-2">
-                                <input type="text" className="grow" value={visitor.paymentType} />
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center">
                         <div className="flex-initial w-[20%]">Quantity</div>
                         <div className="flex-initial w-full">
                             <label className="input bg-base-200 input-bordered flex items-center gap-x-14 my-2">
@@ -150,12 +163,33 @@ function Finder() {
                         <div className="flex-initial w-[20%]">DepartedAt</div>
                         <div className="flex-initial w-full">
                             <label className="input bg-base-200 input-bordered flex items-center gap-x-14 my-2">
-                                <input type="text" className="grow" value={visitor.departedAt ? formatDate(visitor.departedAt): "-"} />
+                                <input type="text" className="grow" value={visitor.departedAt ? formatDate(visitor.departedAt) : "-"} />
                             </label>
                         </div>
                     </div>
 
-                    <button className="btn btn-outline btn-warning my-5">Set As Departed</button>
+                    <div className="flex items-center">
+                        <div className="flex-initial w-[20%]">Payment</div>
+                        <div className="flex-initial w-full">
+                            <label className="bg-base-200 flex items-center gap-x-14 my-2">
+                                <select
+                                    value={visitor.paymentType}
+                                    onChange={(e) => setVisitor((prev) => ({ ...prev, paymentType: e.target.value }))}
+                                    className="select select-bordered w-full max-w-xs">
+                                    <option>CASH</option>
+                                    <option>CASHLESS</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={updateButtonClick}
+                        autoFocus={true}
+                        className="btn btn-outline btn-warning my-5">
+                        Set As Departed
+                    </button>
+                    {success && <SuccessAlert props={success} />}
                 </div>
             </div>
         </>

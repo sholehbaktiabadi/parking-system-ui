@@ -1,7 +1,7 @@
 export interface APiResponse{
         statusCode: number
         message: any | any[]
-        isSuccess: boolean 
+        type: string 
         total?: number
         totalPage?: number
         isHasNextPage?: boolean

@@ -21,7 +21,15 @@ export const Drawer: React.FC<any> = ({ props }) => {
           className="drawer-overlay"
         ></label>
         <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-          <p className="font-bold my-3">Visitor</p>
+          <p className="font-bold my-3">New</p>
+          <li>
+          <NavLink to="/create-car">Car</NavLink>
+          </li>
+          <li>
+          <NavLink to="/create-scooter">Scooter</NavLink>
+          </li>
+
+          <p className="font-bold my-3">History</p>
           <li>
           <NavLink to="/finder">Finder</NavLink>
           </li>
