@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { env } from "../config/env";
-import axios from "axios";
+import { ParkingSystemService } from "../api/parking-system";
 
 export const Navbar = () => {
   const [isOnline, setOnline] = useState(false);
@@ -12,8 +11,7 @@ export const Navbar = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const serverHealth = () => {
-        axios
-          .get(env.VITE_PARKING_SYSTEM_URL)
+          ParkingSystemService.getServerHealth()
           .then((res) => {
             if (res.data.status == "ok") {
               setOnline(true);

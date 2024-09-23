@@ -5,9 +5,20 @@ import Cookies from "js-cookie";
 
 export class ParkingSystemService {
     static token = `Bearer ${Cookies.get("jwt")}`
-
     static async getServerHealth() {
         return await axios.get(env.VITE_PARKING_SYSTEM_URL)
+    }
+
+    static async verifyToken() {
+        const data = await axios.get(env.VITE_PARKING_SYSTEM_URL, { headers: { Authorization: ParkingSystemService.token } })
+        const parse = parseResponse(data)
+        return parse
+    }
+
+    static async serverHealth() {
+        const data = await axios.get(env.VITE_PARKING_SYSTEM_URL)
+        const parse = parseResponse(data)
+        return parse
     }
 
     static async getVisitor() {
