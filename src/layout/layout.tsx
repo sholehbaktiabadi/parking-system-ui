@@ -4,13 +4,13 @@ import { Drawer } from "./sidebar";
 
 const Layout: React.FC<any> = ({ props }) => {
     return (
-        <div className="flex flex-col h-screen justify-between">
+        <div>
         <header>
             { <Navbar/> }
         </header>
-        <body>
+        <div>
             { <Drawer props={props}/> }
-        </body>
+        </div>
         </div>
     )
 }
