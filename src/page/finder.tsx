@@ -7,6 +7,7 @@ import { getStatusColor } from "../helper/transaction"
 import { getHttpStatus } from "../helper/api"
 import { HttpStatusType } from "../enum/http"
 import { PaymentType } from "../enum/payment"
+import { CurrencyFmt } from "../helper/formatter"
 
 function Finder() {
     const IDref = useRef(0)
@@ -145,7 +146,7 @@ function Finder() {
                         <div className="flex-initial w-[20%]">Total</div>
                         <div className="flex-initial w-full">
                             <label className="input bg-base-200 input-bordered flex items-center gap-x-14 my-2">
-                                <input type="text" className="grow" value={visitor.grandTotal} />
+                                <input type="text" className="grow" value={CurrencyFmt(visitor.grandTotal)} />
                             </label>
                         </div>
                     </div>

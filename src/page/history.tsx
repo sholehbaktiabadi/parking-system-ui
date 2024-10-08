@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { ParkingSystemService } from "../api/parking-system"
 import { getStatusColor } from "../helper/transaction"
 import { APiResponse } from "../interface/response"
+import { CurrencyFmt } from "../helper/formatter"
 
 function VisitorList() {
   const [retrievedData, setRetrievedData] = useState<APiResponse>({ statusCode: 1, type:"success", message: [], isHasNextPage: false, total: 0, totalPage: 0 })
@@ -38,7 +39,7 @@ function VisitorList() {
                 <td>{type}</td>
                 <td>{price}</td>
                 <td>{quantity}</td>
-                <td>{grandTotal}</td>
+                <td>{CurrencyFmt(grandTotal)}</td>
                 <td><button className="btn btn-neutral">View</button></td>
               </tr>
             ))}
