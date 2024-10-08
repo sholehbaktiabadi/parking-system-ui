@@ -22,7 +22,7 @@ export class ParkingSystemService {
     }
 
     static async getVisitor() {
-        const queryParams = { limit: 10, page: 1, type: "SCOOTER" }
+        const queryParams = { limit: 10, page: 1 }
         const data = await axios.get(env.VITE_PARKING_SYSTEM_URL + '/visitor', { params: queryParams, headers: { Authorization: ParkingSystemService.token } })
         const parse = parseResponse(data)
         return parse
