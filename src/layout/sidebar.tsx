@@ -34,7 +34,7 @@ export const Drawer: React.FC<any> = ({ props }) => {
           <NavLink to="/finder">Finder</NavLink>
           </li>
           <li>
-          <NavLink to="/">Listing</NavLink>
+          <NavLink to="/">Transactions</NavLink>
           </li>
         </ul>
       </div>
